@@ -67,12 +67,15 @@ func TestAccJWTAuthBackendRole_import(t *testing.T) {
 						"not_before_leeway", "120"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"verbose_oidc_logging", "true"),
+					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
+						"bound_claims_separator", ","),
 				),
 			},
 			{
-				ResourceName:      "vault_jwt_auth_backend_role.role",
-				ImportState:       true,
-				ImportStateVerify: true,
+				ResourceName:            "vault_jwt_auth_backend_role.role",
+				ImportState:             true,
+				ImportStateVerify:       true,
+				ImportStateVerifyIgnore: []string{"bound_claims_separator"},
 			},
 		},
 	})
@@ -114,6 +117,8 @@ func TestAccJWTAuthBackendRole_basic(t *testing.T) {
 						"bound_claims_type", "string"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"user_claim", "https://vault/user"),
+					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
+						"bound_claims_separator", ","),
 				),
 			},
 		},
@@ -154,6 +159,8 @@ func TestAccJWTAuthBackendRole_update(t *testing.T) {
 						"bound_claims_type", "string"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"user_claim", "https://vault/user"),
+					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
+						"bound_claims_separator", ","),
 				),
 			},
 			{
@@ -187,6 +194,8 @@ func TestAccJWTAuthBackendRole_update(t *testing.T) {
 						"bound_audiences.2478800941", "https://myco.test"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"user_claim", "https://vault/user"),
+					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
+						"bound_claims_separator", ","),
 				),
 			},
 		},
@@ -251,6 +260,8 @@ func TestAccJWTAuthBackendRole_full(t *testing.T) {
 						"not_before_leeway", "120"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"verbose_oidc_logging", "true"),
+					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
+						"bound_claims_separator", ","),
 				),
 			},
 		},
@@ -308,11 +319,13 @@ func TestAccJWTAuthBackendRoleOIDC_full(t *testing.T) {
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"bound_claims_type", "string"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
-						"bound_claims.%", "2"),
+						"bound_claims.%", "3"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
-						"bound_claims.department", "engineering,admin"),
+						"bound_claims.department", "engineering\\admin"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"bound_claims.sector", "7g"),
+					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
+						"bound_claims.groups", "/cn=example,ou=security,ou=groups,o=example"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"claim_mappings.%", "2"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
@@ -321,6 +334,8 @@ func TestAccJWTAuthBackendRoleOIDC_full(t *testing.T) {
 						"claim_mappings.preferred_language", "language"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"verbose_oidc_logging", "true"),
+					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
+						"bound_claims_separator", "\\"),
 				),
 			},
 		},
@@ -383,6 +398,8 @@ func TestAccJWTAuthBackendRole_fullUpdate(t *testing.T) {
 						"not_before_leeway", "120"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"verbose_oidc_logging", "true"),
+					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
+						"bound_claims_separator", ","),
 				),
 			},
 			{
@@ -425,11 +442,13 @@ func TestAccJWTAuthBackendRole_fullUpdate(t *testing.T) {
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"bound_claims_type", "glob"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
-						"bound_claims.%", "2"),
+						"bound_claims.%", "3"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"bound_claims.department", "engineering-*-admin"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"bound_claims.sector", "7g"),
+					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
+						"bound_claims.groups", "/cn=example,ou=security,ou=groups,o=example"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"clock_skew_leeway", "0"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
@@ -438,6 +457,8 @@ func TestAccJWTAuthBackendRole_fullUpdate(t *testing.T) {
 						"not_before_leeway", "0"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"verbose_oidc_logging", "false"),
+					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
+						"bound_claims_separator", ","),
 				),
 			},
 		},
@@ -490,6 +511,8 @@ func TestAccJWTAuthBackendRole_fullDeprecated(t *testing.T) {
 						"user_claim", "https://vault/user"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"groups_claim", "https://vault/groups"),
+					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
+						"bound_claims_separator", ","),
 				),
 			},
 			{
@@ -527,6 +550,8 @@ func TestAccJWTAuthBackendRole_fullDeprecated(t *testing.T) {
 						"user_claim", "https://vault/updateuser"),
 					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
 						"groups_claim", "https://vault/updategroups"),
+					resource.TestCheckResourceAttr("vault_jwt_auth_backend_role.role",
+						"bound_claims_separator", ","),
 				),
 			},
 		},
@@ -648,9 +673,11 @@ resource "vault_jwt_auth_backend_role" "role" {
   token_max_ttl = 7200
   bound_claims_type = "string"
   bound_claims = {
-    department = "engineering,admin"
+    department = "engineering\\admin"
     sector = "7g"
+    groups = "/cn=example,ou=security,ou=groups,o=example"
   }
+  bound_claims_separator = "\\"
   claim_mappings = {
     preferred_language = "language",
     group = "group"
@@ -685,6 +712,7 @@ resource "vault_jwt_auth_backend_role" "role" {
   bound_claims = {
     department = "engineering-*-admin"
     sector = "7g"
+	groups = "/cn=example,ou=security,ou=groups,o=example"
   }
 }`, backend, role)
 }

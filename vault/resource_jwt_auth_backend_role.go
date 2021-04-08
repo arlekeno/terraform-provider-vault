@@ -92,7 +92,13 @@ func jwtAuthBackendRoleResource() *schema.Resource {
 		"bound_claims": {
 			Type:        schema.TypeMap,
 			Optional:    true,
-			Description: "Map of claims/values to match against. The expected value may be a single string or a comma-separated string list.",
+			Description: "Map of claims/values to match against. The expected value is a string (which will be split into a list by the bound_claims_separator if present).",
+		},
+		"bound_claims_separator": {
+			Type:        schema.TypeString,
+			Optional:    true,
+			Default:     ",",
+			Description: "Character on which each string value in the bound_claims map will be split in to a string list",
 		},
 		"claim_mappings": {
 			Type:        schema.TypeMap,
@@ -379,10 +385,11 @@ func jwtAuthBackendRoleRead(d *schema.ResourceData, meta interface{}) error {
 	if resp.Data["bound_claims"] != nil {
 		boundClaims := make(map[string]interface{})
 		respBoundClaims := resp.Data["bound_claims"].(map[string]interface{})
+		boundClaimsSeparator := d.Get("bound_claims_separator").(string)
 		for k, v := range respBoundClaims {
 			switch boundClaimVal := v.(type) {
 			case []interface{}:
-				boundClaims[k] = strings.Join(util.JsonStringArrayToStringArray(boundClaimVal), ",")
+				boundClaims[k] = strings.Join(util.JsonStringArrayToStringArray(boundClaimVal), boundClaimsSeparator)
 			case string:
 				boundClaims[k] = boundClaimVal
 			default:
@@ -539,10 +546,11 @@ func jwtAuthBackendRoleDataToWrite(d *schema.ResourceData, create bool) map[stri
 
 	if v, ok := d.GetOk("bound_claims"); ok {
 		boundClaims := make(map[string]interface{})
+		boundClaimsSeparator := d.Get("bound_claims_separator").(string)
 		for key, val := range v.(map[string]interface{}) {
 			valStr := val.(string)
-			if strings.Contains(valStr, ",") {
-				vals := strings.Split(valStr, ",")
+			if strings.Contains(valStr, boundClaimsSeparator) {
+				vals := strings.Split(valStr, boundClaimsSeparator)
 				for i := range vals {
 					vals[i] = strings.TrimSpace(vals[i])
 				}

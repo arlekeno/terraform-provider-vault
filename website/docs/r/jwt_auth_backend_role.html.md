@@ -70,7 +70,13 @@ The following arguments are supported:
   this value.
 
 * `bound_claims` - (Optional) If set, a map of claims/values to match against.
-  The expected value may be a single string or a list of strings.
+  The expected value is a string which will be split in to a list of strings
+  based on the value supplied to `bound_claims_seperator`.
+
+* `bound_claims_separator` - (Optional) Character on which each value 
+  in the claims/values map (`bound_claims`) will be split in order to produce
+  a list of strings
+  Defaults to `,`.
 
 * `bound_claims_type` - (Optional) How to interpret values in the claims/values
   map (`bound_claims`): can be either `string` (exact match) or `glob` (wildcard
