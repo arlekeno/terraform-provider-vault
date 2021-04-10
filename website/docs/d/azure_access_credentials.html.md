@@ -28,14 +28,24 @@ by activating `validate_creds`, credentials will be tested before being
 returned. This will, however, increase the time it takes for the credentials
 to be returned, blocking Terraform's execution until they are ready.
 
-If `validate_creds` is used, by default, credentials will be validated by 
-making a test call to Azure every 7 seconds. When we have received 8 
-successes in a row, the credentials will be returned. We have seen propagation 
-times take up to 15 minutes, so the maximum length of time for the check defaults 
-to 20 minutes. However, propagation times will vary widely based on each company's Azure
-usage, so all these settings are configurable.
+If `validate_creds` is used, then the policy of the vault provider token must
+include the below to allow retrieval of the tenant_id and subscription_id which
+are required to instantiate the client.
+``` hcl
+# Assuming the backend is mounted as azure
+path "azure/config" {
+  capabilities = ["read"]
+}
+```
+by default, credentials will be validated by making a test call to Azure every 7 seconds.
+When we have received 8 successes in a row, the credentials will be returned.
+We have seen propagation times take up to 15 minutes, so the maximum length of time
+for the check defaults to 20 minutes. However, propagation times will vary widely
+based on each company's Azure usage, so all these settings are configurable.
 
 Credentials are tested by attempting to refresh a client token with them.
+
+
 
 ## Example Usage
 
@@ -49,11 +59,13 @@ data "vault_azure_access_credentials" "creds" {
   max_cred_validation_seconds = 1200 // 20 minutes
 }
 
-provider "azure" {
-  tenant_id = "${data.vault_azure_access_credentials.creds.tenant_id}"
-  subscription_id = "${data.vault_azure_access_credentials.creds.subscription_id}"
+provider "azurerm" {
   client_id = "${data.vault_azure_access_credentials.creds.client_id}"
   client_secret = "${data.vault_azure_access_credentials.creds.client_secret}"
+# The tenant_id and client_id must be supplied as variables when not using validate_creds
+  tenant_id = "${data.vault_azure_access_credentials.creds.tenant_id}"
+  subscription_id = "${data.vault_azure_access_credentials.creds.subscription_id}"
+  features {}
 }
 ```
 
@@ -89,8 +101,12 @@ to 1,200 (20 minutes).
 In addition to the arguments above, the following attributes are exported:
 
 * `tenant_id` - The tenant id for credentials to query the Azure APIs.
+This will only be returned when `validate_creds = true` else it will
+be returned as `null`
 
 * `subscription_id` - The subscription id for credentials to query the Azure APIs.
+This will only be returned when `validate_creds = true` else it will
+be returned as `null`
 
 * `client_id` - The client id for credentials to query the Azure APIs.
 

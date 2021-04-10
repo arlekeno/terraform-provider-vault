@@ -66,12 +66,12 @@ func azureAccessCredentialsDataSource() *schema.Resource {
 			"tenant_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The tenant id for credentials to query the Azure APIs.",
+				Description: "The tenant id for credentials to query the Azure APIs (null when validate_creds is false).",
 			},
 			"subscription_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
-				Description: "The subscription id for credentials to query the Azure APIs.",
+				Description: "The subscription id for credentials to query the Azure APIs (null when validate_creds is false).",
 			},
 			"lease_id": {
 				Type:        schema.TypeString,
