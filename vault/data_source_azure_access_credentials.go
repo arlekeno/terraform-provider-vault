@@ -63,6 +63,16 @@ func azureAccessCredentialsDataSource() *schema.Resource {
 				Computed:    true,
 				Description: "The client secret for credentials to query the Azure APIs.",
 			},
+			"tenant_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The tenant id for credentials to query the Azure APIs.",
+			},
+			"subscription_id": {
+				Type:        schema.TypeString,
+				Computed:    true,
+				Description: "The subscription id for credentials to query the Azure APIs.",
+			},
 			"lease_id": {
 				Type:        schema.TypeString,
 				Computed:    true,
@@ -138,6 +148,7 @@ func azureAccessCredentialsDataSourceRead(d *schema.ResourceData, meta interface
 	if subscriptionID == "" {
 		return fmt.Errorf(`unable to parse 'subscription_id' from %s`, configPath)
 	}
+	_ = d.Set("subscription_id", subscriptionID)
 
 	tenantID := ""
 	if tenantIDIfc, ok := secret.Data["tenant_id"]; ok {
@@ -146,6 +157,7 @@ func azureAccessCredentialsDataSourceRead(d *schema.ResourceData, meta interface
 	if tenantID == "" {
 		return fmt.Errorf(`unable to parse 'tenant_id' from %s`, configPath)
 	}
+	_ = d.Set("tenant_id", tenantID)
 
 	environment := ""
 	if environmentIfc, ok := secret.Data["environment"]; ok {

@@ -28,6 +28,8 @@ func TestAccDataSourceAzureAccessCredentials_basic(t *testing.T) {
 					resource.TestCheckResourceAttrSet("data.vault_azure_access_credentials.test", "client_id"),
 					resource.TestCheckResourceAttrSet("data.vault_azure_access_credentials.test", "client_secret"),
 					resource.TestCheckResourceAttrSet("data.vault_azure_access_credentials.test", "lease_id"),
+					resource.TestCheckResourceAttrSet("data.vault_azure_access_credentials.test", "subscription_id"),
+					resource.TestCheckResourceAttrSet("data.vault_azure_access_credentials.test", "tenant_id"),
 				),
 			},
 			{

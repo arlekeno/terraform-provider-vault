@@ -41,6 +41,7 @@ Credentials are tested by attempting to refresh a client token with them.
 
 ```hcl
 data "vault_azure_access_credentials" "creds" {
+  backend = "azure"
   role    = "my-role"
   validate_creds = true
   num_sequential_successes = 8
@@ -49,6 +50,8 @@ data "vault_azure_access_credentials" "creds" {
 }
 
 provider "azure" {
+  tenant_id = "${data.vault_azure_access_credentials.creds.tenant_id}"
+  subscription_id = "${data.vault_azure_access_credentials.creds.subscription_id}"
   client_id = "${data.vault_azure_access_credentials.creds.client_id}"
   client_secret = "${data.vault_azure_access_credentials.creds.client_secret}"
 }
@@ -84,6 +87,10 @@ to 1,200 (20 minutes).
 ## Attributes Reference
 
 In addition to the arguments above, the following attributes are exported:
+
+* `tenant_id` - The tenant id for credentials to query the Azure APIs.
+
+* `subscription_id` - The subscription id for credentials to query the Azure APIs.
 
 * `client_id` - The client id for credentials to query the Azure APIs.
 
